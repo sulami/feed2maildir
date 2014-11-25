@@ -16,6 +16,10 @@ class LoaderTestCase(unittest.TestCase):
         self.assertEqual(loader.config['feeds']['Feed #1'], 'someurl')
         self.assertEqual(loader.config['feeds']['Feed #2'], 'anotherurl')
 
+    def test_loader_uses_default_config(self):
+        loader = feed2maildir.loader.Loader(config='/tmp/nothing', silent=True)
+        self.assertEqual(loader.config['feeds'], {})
+
 if __name__ == '__main__':
     unittest.main()
 

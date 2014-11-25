@@ -5,7 +5,7 @@ import unittest
 
 import feed2maildir
 
-class mainTestCase(unittest.TestCase):
+class MainTestCase(unittest.TestCase):
     def test_returns_zero(self):
         self.assertEqual(feed2maildir.main(), 0)
 

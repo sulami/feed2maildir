@@ -7,7 +7,7 @@ def readme():
         return f.read()
 
 setup(name='feed2maildir',
-      version=rss2maildir.VERSION,
+      version=feed2maildir.VERSION,
       description='Convert feeds to maildirs',
       long_description=readme(),
       url='https://github.com/sulami/feed2maildir',

@@ -20,6 +20,11 @@ class ReaderTestCase(unittest.TestCase):
         reader = feed2maildir.reader.Reader(testfeed)
         self.assertEqual(reader.feeds['Blog'].feed.title, 'Toast')
 
+    def test_read_fail(self):
+        testfeed = {'Blog': 'gibberish'}
+        reader = feed2maildir.reader.Reader(testfeed, silent=True)
+        self.assertEqual(len(reader.feeds), 0)
+
 if __name__ == '__main__':
     unittest.main()
 

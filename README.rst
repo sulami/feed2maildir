@@ -1,7 +1,7 @@
-RSS2Maildir
-===========
+Feed2Maildir
+============
 
-Read RSS feeds in your favourite, maildir-compatible email client.
+Read RSS/Atom feeds in your favourite, maildir-compatible email client.
 
 Usage
 -----

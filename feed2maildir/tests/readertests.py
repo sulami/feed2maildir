@@ -18,7 +18,7 @@ class ReaderTestCase(unittest.TestCase):
                                </channel>
                                </rss>"""}
         reader = feed2maildir.reader.Reader(testfeed)
-        self.assertEqual(reader.feeds['Blog']['feed']['title'], 'Toast')
+        self.assertEqual(reader.feeds['Blog'].feed.title, 'Toast')
 
 if __name__ == '__main__':
     unittest.main()

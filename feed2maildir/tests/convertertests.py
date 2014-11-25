@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+import os
+import shutil
 import unittest
 
 from feed2maildir.converter import Converter
@@ -65,6 +67,20 @@ class ConverterTestCase(unittest.TestCase):
         converter = Converter(self.test)
         self.assertEqual(len(converter.feeds), 1)
         self.assertEqual(len(converter.feeds['testblog']), 2)
+
+    def test_fail_to_make_maildir(self):
+        converter = Converter(self.test, maildir='/maildir', silent=True)
+        converter.writeout()
+        self.assertFalse(os.access('/maildir', os.F_OK))
+
+    def test_make_maildir(self):
+        converter = Converter(self.test, maildir='/tmp/maildir')
+        converter.writeout()
+        self.assertTrue(os.access('/tmp/maildir', os.F_OK))
+        self.assertTrue(os.access('/tmp/maildir/tmp', os.F_OK))
+        self.assertTrue(os.access('/tmp/maildir/new', os.F_OK))
+        self.assertTrue(os.access('/tmp/maildir/cur', os.F_OK))
+        shutil.rmtree('/tmp/maildir')
 
 if __name__ == '__main__':
     unittest.main()

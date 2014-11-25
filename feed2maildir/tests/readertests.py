@@ -11,10 +11,14 @@ class ReaderTestCase(unittest.TestCase):
         reader = feed2maildir.reader.Reader(testfeed)
         self.assertEqual(reader.feeds, {})
 
-    def test_read_my_blog(self):
-        testfeed = {'Blog': 'https://sulami.github.io/feed/rss.xml'}
+    def test_read_some_raw_data(self):
+        testfeed = {'Blog': """<rss version="2.0">
+                               <channel>
+                               <title>Toast</title>
+                               </channel>
+                               </rss>"""}
         reader = feed2maildir.reader.Reader(testfeed)
-        self.assertIsNotNone(reader.feeds['Blog'])
+        self.assertEqual(reader.feeds['Blog']['feed']['title'], 'Toast')
 
 if __name__ == '__main__':
     unittest.main()

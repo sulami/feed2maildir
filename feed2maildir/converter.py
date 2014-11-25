@@ -69,6 +69,19 @@ class Converter:
                     mail = TEMPLATE.format(entry['published'],
                     entry['author'], entry['title'], feed, entry['link'],
                     entry['description'])
+                    self.write(mail)
+
+    def write(self, message):
+        """Take a message and write it to a mail"""
+        dt = str(datetime.datetime.now())
+        pid = str(os.getpid())
+        host = os.uname()[1]
+        name = '{}/new/{}{}{}'.format(self.maildir, dt, pid, host)
+        try: # to write out the message
+            with open(name, 'w', encoding='utf-8') as f:
+                f.write(message)
+        except:
+            self.output('WARNING: failed to write message to file')
 
     def mktime(self, arg):
         """Make a datetime object from a time string"""

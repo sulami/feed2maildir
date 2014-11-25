@@ -1,4 +1,5 @@
 import json
+import os.path
 
 class Loader:
     """Loads the config/list of feeds from a file"""
@@ -7,7 +8,7 @@ class Loader:
         self.silent = silent
 
         try:
-            with file(config, 'r') as f:
+            with file(os.path.expanduser(config), 'r') as f:
                 self.config = json.loads(f.read())
         except: # Use default config
             self.output('WARNING: could not open config "{}"'.format(config))

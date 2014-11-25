@@ -4,15 +4,15 @@
 import json
 import unittest
 
-import feed2maildir.converter
+from feed2maildir.converter import Converter
 
 class ConverterTestCase(unittest.TestCase):
     def setUp(self):
         # Construct something the reader is expected to spit out
         self.test = {
-            'test': {
+            'testblog': {
                 'feed': {
-                    'title': u'blog',
+                    'title': u'testblog',
                     'link': u'http://example.org',
                     'description': u'nothing to see here',
                     'published': u'Sat, 07 Sep 2002 00:00:01 GMT',
@@ -42,20 +42,29 @@ class ConverterTestCase(unittest.TestCase):
         with open('/tmp/f2mtest', 'w') as f:
             f.write(json.dumps(self.test))
 
-    def test_db_does_not_exist(self):
-        converter = feed2maildir.converter.Converter('fds', db='/nothing')
+    def test_read_nonexistent_db(self):
+        converter = Converter({}, db='/nothing')
         self.assertIsNone(converter.db)
 
-    def test_db_is_gibberish(self):
+    def test_read_invalid_db(self):
         with open('/tmp/gibber', 'w') as f:
             f.write('gibberish')
-        converter = feed2maildir.converter.Converter('fds', db='/tmp/gibber',
-                                                     silent=True)
+        converter = Converter({}, db='/tmp/gibber', silent=True)
         self.assertIsNone(converter.db)
 
     def test_read_valid_db(self):
-        converter = feed2maildir.converter.Converter('fds', db='/tmp/f2mtest')
+        converter = Converter({}, db='/tmp/f2mtest')
         self.assertIsNotNone(converter.db)
+
+    def test_convert_invalid_input(self):
+        converter = Converter({'feed': 'gibberish'}, db='/tmp/f2mtest',
+                              silent=True)
+        self.assertEqual(len(converter.feeds), 0)
+
+    def test_convert_valid_input(self):
+        converter = Converter(self.test)
+        self.assertEqual(len(converter.feeds), 1)
+        self.assertEqual(len(converter.feeds['testblog']), 2)
 
 if __name__ == '__main__':
     unittest.main()

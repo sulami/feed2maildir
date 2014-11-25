@@ -70,7 +70,8 @@ class ConverterTestCase(unittest.TestCase):
 
     def test_fail_to_make_maildir(self):
         converter = Converter(self.test, maildir='/maildir', silent=True)
-        converter.writeout()
+        with self.assertRaises(SystemExit):
+            converter.writeout()
         self.assertFalse(os.access('/maildir', os.F_OK))
 
     def test_make_maildir(self):

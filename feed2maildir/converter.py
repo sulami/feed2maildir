@@ -37,17 +37,15 @@ class Converter:
             self.feeds.pop(i)
 
     def writeout(self):
-        if os.access(self.maildir, os.W_OK): # we have access to the maildir
-            for feed, content in self.feeds.items():
-                pass
-        else:
+        # Check for maildir existence and accessability
+        if not os.access(self.maildir, os.W_OK):
             try: # to make the dir
                 os.mkdir(self.maildir)
                 os.mkdir('{}/tmp'.format(self.maildir))
                 os.mkdir('{}/new'.format(self.maildir))
                 os.mkdir('{}/cur'.format(self.maildir))
             except:
-                self.output('ERROR: accessing "{}" failed'.format(self.maildir))
+                sys.exit('ERROR: accessing "{}" failed'.format(self.maildir))
 
     def output(self, arg):
         if not self.silent:

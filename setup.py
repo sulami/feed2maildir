@@ -17,6 +17,9 @@ setup(name='feed2maildir',
       packages=['feed2maildir'],
       test_suite = 'feed2maildir.tests',
       zip_safe=False,
+      install_requires=[
+          'feedparser>=5.1.3',
+      ],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'License :: OSI Approved :: ISC License (ISCL)',

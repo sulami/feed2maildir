@@ -17,8 +17,8 @@ class ConverterTestCase(unittest.TestCase):
                     'title': u'testblog',
                     'link': u'http://example.org',
                     'description': u'nothing to see here',
-                    'published': u'Sat, 07 Sep 2002 00:00:01 GMT',
-                    'published_parsed': (2002, 9, 7, 0, 0, 1, 5, 250, 0),
+                    'updated': u'Sat, 07 Sep 2002 00:00:01 GMT',
+                    'updated_parsed': (2002, 9, 7, 0, 0, 1, 5, 250, 0),
                 },
                 'entries': [
                     {

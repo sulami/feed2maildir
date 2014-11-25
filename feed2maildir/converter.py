@@ -7,14 +7,13 @@ import sys
 if sys.version[0] == '2':
     FileNotFoundError = IOError
 
-TEMPLATE = """
-MIME-Version: 1.0
-From: {}
+TEMPLATE = """MIME-Version: 1.0
 Date: {}
 Subject: [{}] {}
-Content-Type: text/plain
+From: {}
 
-[Feed2Maildir] Read the update here: {}
+[Feed2Maildir] Read the update here:
+{}
 
 {}
 """
@@ -42,7 +41,7 @@ class Converter:
             try: # to validate the feeds, access some essential keys
                 content['feed']['title']
                 content['feed']['link']
-                content['feed']['published']
+                content['feed']['updated']
             except:
                 self.output('WARNING: feed {} seems to be broken'.format(feed))
                 inval.append(feed)
@@ -50,7 +49,7 @@ class Converter:
             self.feeds.pop(i)
 
     def writeout(self):
-        """check which updates need to be written to the maildir"""
+        """Check which updates need to be written to the maildir"""
         if not os.access(self.maildir, os.W_OK):
             try: # to make the maildir
                 os.mkdir(self.maildir)
@@ -62,13 +61,13 @@ class Converter:
 
         for feed, content in self.feeds.items():
             try:
-                pubdate = self.mktime(content['feed']['published'])
-            except KeyError:
+                pubdate = self.mktime(self.db[feed]['feed']['updated'])
+            except:
                 pubdate = None
             for entry in content['entries']:
                 if not self.db or self.mktime(entry['published']) > pubdate:
-                    mail = TEMPLATE.format(feed, entry['published'],
-                    entry['author'], entry['title'], entry['link'],
+                    mail = TEMPLATE.format(entry['published'],
+                    entry['author'], entry['title'], feed, entry['link'],
                     entry['description'])
 
     def mktime(self, arg):

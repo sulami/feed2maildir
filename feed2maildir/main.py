@@ -10,6 +10,7 @@ def main():
     config = loader.config
     reader = Reader(config['feeds'])
     converter = Converter(reader.feeds)
+    converter.writeout()
 
 if __name__ == '__main__':
     main()

@@ -8,7 +8,7 @@ class Loader:
         self.silent = silent
 
         try:
-            with file(os.path.expanduser(config), 'r') as f:
+            with open(os.path.expanduser(config), 'r') as f:
                 self.config = json.loads(f.read())
         except: # Use default config
             self.output('WARNING: could not open config "{}"'.format(config))
@@ -16,5 +16,5 @@ class Loader:
 
     def output(self, arg):
         if not self.silent:
-            print arg
+            print(arg)
 

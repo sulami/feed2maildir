@@ -46,17 +46,17 @@ class ConverterTestCase(unittest.TestCase):
 
     def test_read_nonexistent_db(self):
         converter = Converter({}, db='/nothing')
-        self.assertIsNone(converter.db)
+        self.assertIsNone(converter.dbdata)
 
     def test_read_invalid_db(self):
         with open('/tmp/gibber', 'w') as f:
             f.write('gibberish')
         converter = Converter({}, db='/tmp/gibber', silent=True)
-        self.assertIsNone(converter.db)
+        self.assertIsNone(converter.dbdata)
 
     def test_read_valid_db(self):
         converter = Converter({}, db='/tmp/f2mtest')
-        self.assertIsNotNone(converter.db)
+        self.assertIsNotNone(converter.dbdata)
 
     def test_convert_invalid_input(self):
         converter = Converter({'feed': 'gibberish'}, db='/tmp/f2mtest',

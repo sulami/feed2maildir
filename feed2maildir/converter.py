@@ -28,15 +28,16 @@ class Converter:
         self.silent = silent
         self.feeds = feeds
         self.maildir = os.path.expanduser(maildir)
+        self.db = os.path.expanduser(db)
 
         try: # to read the database
-            with open(os.path.expanduser(db), 'r') as f:
-                self.db = json.loads(f.read())
+            with open(self.db, 'r') as f:
+                self.dbdata = json.loads(f.read())
         except FileNotFoundError:
-            self.db = None
+            self.dbdata = None
         except ValueError:
             self.output('WARNING: database is malformed and will be ignored')
-            self.db = None
+            self.dbdata = None
 
         inval = []
         for feed, content in self.feeds.items():
@@ -61,17 +62,27 @@ class Converter:
             except:
                 sys.exit('ERROR: accessing "{}" failed'.format(self.maildir))
 
+        newtimes = {}
         for feed, content in self.feeds.items():
-            try:
-                pubdate = self.mktime(self.db[feed]['feed']['updated'])
-            except:
+            try: # to find the last update time for the feed in the db
+                pubdate = self.mktime(self.dbdata[feed])
+            except: # there is no record, mail all entries
                 pubdate = None
             for entry in content['entries']:
-                if not self.db or self.mktime(entry['published']) > pubdate:
+                time = self.mktime(entry['published'])
+                if not pubdate or time > pubdate:
                     mail = TEMPLATE.format(entry['published'],
                     entry['author'], entry['title'], feed, entry['link'],
                     entry['description'])
                     self.write(mail)
+                if feed not in newtimes or time > self.mktime(newtimes[feed]):
+                    newtimes[feed] = entry['published']
+
+        try: # to write the new database
+            with open(self.db, 'w') as f:
+                f.write(json.dumps(newtimes))
+        except:
+            self.output('WARNING: failed to write the new database')
 
     def write(self, message):
         """Take a message and write it to a mail"""
@@ -92,7 +103,9 @@ class Converter:
 
     def mktime(self, arg):
         """Make a datetime object from a time string"""
-        return datetime.datetime.strptime(arg, '%a, %d %b %Y %H:%M:%S %Z')
+        # This is due to the fantastic built-in strptime >.<
+        return datetime.datetime.strptime(' '.join(arg.split(' ')[0:5]),
+                                          '%a, %d %b %Y %X')
 
     def output(self, arg):
         if not self.silent:

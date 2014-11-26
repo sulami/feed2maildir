@@ -83,7 +83,10 @@ class Converter:
         try: # to write out the message
             with open(name, 'w') as f:
                 # We can thank the P2/P3 unicode madness for this...
-                f.write(str(message.encode('utf8')))
+                if sys.version[0] == '2':
+                    f.write(str(message.encode('utf8')))
+                else:
+                    f.write(message)
         except:
             self.output('WARNING: failed to write message to file')
 

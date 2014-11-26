@@ -93,7 +93,8 @@ class ConverterTestCase(unittest.TestCase):
 
     def test_find_new_posts(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
-        # converter.find_new()
+        new = converter.find_new([], [])
+        self.assertEqual(new, None)
 
 if __name__ == '__main__':
     unittest.main()

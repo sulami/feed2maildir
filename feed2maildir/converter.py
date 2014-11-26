@@ -45,13 +45,14 @@ Content-Type: text/plain
         """Load a list of feeds in feedparser-dict form"""
         self.feeds = feeds
 
-    def find_new(self):
+    def find_new(self, feeds, db):
         """Find the new posts from within self.feeds by comparing to the db"""
-        try: # to write the new database
-            with open(self.db, 'w') as f:
-                f.write(json.dumps(newtimes))
-        except:
-            self.output('WARNING: failed to write the new database')
+        return None
+        # try: # to write the new database
+        #     with open(self.db, 'w') as f:
+        #         f.write(json.dumps(newtimes))
+        # except:
+        #     self.output('WARNING: failed to write the new database')
 
     def writeout(self):
         """Write out self.news to a maildir"""

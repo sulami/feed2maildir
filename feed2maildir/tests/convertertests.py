@@ -8,42 +8,44 @@ import unittest
 
 from feed2maildir.converter import Converter
 
+class AttrDict(dict):
+    """This is a dict that can be accessed via attributes, just like the
+    Feedparser Dict"""
+
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
 class ConverterTestCase(unittest.TestCase):
     def setUp(self):
-        # Construct something the reader is expected to spit out
-        # XXX this is a list of dicts, not feedparser-dicts (!)
-        self.test = [
-            {
-                'feed': {
-                    'title': u'testblog',
-                    'link': u'http://example.org',
-                    'description': u'nothing to see here',
-                    'updated': u'Sat, 07 Sep 2002 00:00:01 GMT',
-                    'updated_parsed': (2002, 9, 7, 0, 0, 1, 5, 250, 0),
-                },
-                'entries': [
-                    {
-                        'title': u'post',
-                        'author': u'sulami',
-                        'link': u'http://example.org',
-                        'published': u'Sat, 07 Sep 2002 00:00:01 GMT',
-                        'published_parsed': (2002, 9, 7, 0, 0, 1, 5, 250, 0),
-                        'description': u'this is a post',
-                    },
-                    {
-                        'title': u'another post',
-                        'author': u'sulami',
-                        'link': u'http://example.org',
-                        'published': u'Sun, 08 Sep 2002 00:00:01 GMT',
-                        'published_parsed': (2002, 9, 8, 0, 0, 1, 5, 250, 0),
-                        'description': u'this is another post',
-                    },
-                ],
-            }
-        ]
-        # Write it into a test db to compare against
-        with open('/tmp/f2mtest', 'w') as f:
-            f.write(json.dumps(self.test))
+        self.testfeed = AttrDict(
+            feed=AttrDict(
+                title=u'testblog',
+                link=u'http://example.org',
+                description=u'nothing to see here',
+                updated=u'Sun, 08 Sep 2002 00:00:01 GMT',
+                updated_parsed=(2002, 9, 7, 0, 0, 1, 5, 250, 0),
+            ),
+            entries=[
+                AttrDict(
+                    title=u'post',
+                    author=u'sulami',
+                    link=u'http://example.org',
+                    updated=u'Sat, 07 Sep 2002 00:00:01 GMT',
+                    published_parsed=(2002, 9, 7, 0, 0, 1, 5, 250, 0),
+                    description=u'this is a post',
+                ),
+                AttrDict(
+                    title=u'another post',
+                    author=u'sulami',
+                    link=u'http://example.org',
+                    updated=u'Sun, 08 Sep 2002 00:00:01 GMT',
+                    published_parsed=(2002, 9, 8, 0, 0, 1, 5, 250, 0),
+                    description=u'this is another post',
+                ),
+            ],
+        )
+        self.test = [self.testfeed, ]
 
     def test_read_nonexistent_db(self):
         converter = Converter(db='/nothing')
@@ -82,7 +84,12 @@ class ConverterTestCase(unittest.TestCase):
 
     def test_composer(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
-        self.assertEqual(converter.compose(self.test), '')
+        self.assertEqual(converter.compose(u'testblog',
+            self.testfeed.entries[0]),
+            (u'MIME-Version: 1.0\nDate: Sat, 07 Sep 2002 00:00:01 GMT\n'
+            'Subject: post\nFrom: testblog\nContent-Type: text/plain\n'
+            '\n[Feed2Maildir] Read the update here:\nhttp://example.org\n\n'
+            'this is a post\n'))
 
     def test_find_new_posts(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')

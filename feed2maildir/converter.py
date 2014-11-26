@@ -10,7 +10,11 @@ import dateutil.parser
 if sys.version[0] == '2':
     FileNotFoundError = IOError
 
-TEMPLATE = u"""MIME-Version: 1.0
+
+class Converter:
+    """Compares the already parsed feeds and converts new ones to maildir"""
+
+    TEMPLATE = u"""MIME-Version: 1.0
 Date: {}
 Subject: {}
 From: {}
@@ -21,9 +25,6 @@ Content-Type: text/plain
 
 {}
 """
-
-class Converter:
-    """Compares the already parsed feeds and converts new ones to maildir"""
 
     def __init__(self, db='~/.f2mdb', maildir='~/mail/feeds',
                  silent=False):
@@ -46,29 +47,6 @@ class Converter:
 
     def find_new(self):
         """Find the new posts from within self.feeds by comparing to the db"""
-        self.news = []
-        newtimes = {}
-        for feed in self.feeds:
-            title = feed.feed.title
-            try: # to find the last update time for the feed in the db
-                oldtime = self.mktime(self.dbdata[title])
-            except: # there is no record, mail all entries
-                oldtime = None
-            for entry in feed.entries:
-                try: # to find the last update time for the post
-                    time = entry.updated
-                except:
-                    try:
-                        time = entry.published
-                    except:
-                        time = None
-                dtime = self.mktime(time) if time else None
-                if dtime > oldtime:
-                    mail = TEMPLATE.format(time, entry.title,
-                    title, entry.link, entry.description)
-                    self.write(mail)
-            newtimes[title] = feed.entries[-1].updated
-
         try: # to write the new database
             with open(self.db, 'w') as f:
                 f.write(json.dumps(newtimes))
@@ -89,13 +67,10 @@ class Converter:
             except:
                 sys.exit('ERROR: accessing "{}" failed'.format(self.maildir))
 
-        # for feed in self.news:
-        #     message = self.compose()
-        #     self.write()
-
-    def compose(self, post):
+    def compose(self, title, post):
         """Compose the mail using the tempate"""
-        return ''
+        return self.TEMPLATE.format(post.updated, post.title, title, post.link,
+                                    post.description)
 
     def write(self, message):
         """Take a message and write it to a mail"""

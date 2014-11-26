@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import random
 import sys
 
 # Python 2.x compabitlity
@@ -73,10 +74,11 @@ class Converter:
 
     def write(self, message):
         """Take a message and write it to a mail"""
+        rand = str(random.randint(10000, 99999))
         dt = str(datetime.datetime.now())
         pid = str(os.getpid())
         host = os.uname()[1]
-        name = '{}/new/{}{}{}'.format(self.maildir, dt, pid, host)
+        name = '{}/new/{}{}{}{}'.format(self.maildir, rand, dt, pid, host)
         try: # to write out the message
             with open(name, 'w', encoding='utf-8') as f:
                 f.write(message)

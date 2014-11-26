@@ -25,10 +25,9 @@ Content-Type: text/plain
 class Converter:
     """Compares the already parsed feeds and converts new ones to maildir"""
 
-    def __init__(self, feeds, db='~/.f2mdb', maildir='~/mail/feeds',
+    def __init__(self, db='~/.f2mdb', maildir='~/mail/feeds',
                  silent=False):
         self.silent = silent
-        self.feeds = feeds
         self.maildir = os.path.expanduser(maildir)
         self.db = os.path.expanduser(db)
 
@@ -41,8 +40,43 @@ class Converter:
             self.output('WARNING: database is malformed and will be ignored')
             self.dbdata = None
 
+    def load(self, feeds):
+        """Load a list of feeds in feedparser-dict form"""
+        self.feeds = feeds
+
+    def find_new(self):
+        """Find the new posts from within self.feeds by comparing to the db"""
+        self.news = []
+        newtimes = {}
+        for feed in self.feeds:
+            title = feed.feed.title
+            try: # to find the last update time for the feed in the db
+                oldtime = self.mktime(self.dbdata[title])
+            except: # there is no record, mail all entries
+                oldtime = None
+            for entry in feed.entries:
+                try: # to find the last update time for the post
+                    time = entry.updated
+                except:
+                    try:
+                        time = entry.published
+                    except:
+                        time = None
+                dtime = self.mktime(time) if time else None
+                if dtime > oldtime:
+                    mail = TEMPLATE.format(time, entry.title,
+                    title, entry.link, entry.description)
+                    self.write(mail)
+            newtimes[title] = feed.entries[-1].updated
+
+        try: # to write the new database
+            with open(self.db, 'w') as f:
+                f.write(json.dumps(newtimes))
+        except:
+            self.output('WARNING: failed to write the new database')
+
     def writeout(self):
-        """Check which updates need to be written to the maildir"""
+        """Write out self.news to a maildir"""
         if (not os.access(self.maildir, os.W_OK)
             or not os.access(self.maildir + '/tmp', os.W_OK)
             or not os.access(self.maildir + '/new', os.W_OK)
@@ -55,40 +89,13 @@ class Converter:
             except:
                 sys.exit('ERROR: accessing "{}" failed'.format(self.maildir))
 
-        newtimes = {}
-        for feed in self.feeds:
-            title = feed.feed.title
-            try: # to find the last update time for the feed in the db
-                pubdate = self.mktime(self.dbdata[title])
-            except: # there is no record, mail all entries
-                pubdate = None
-            for entry in feed.entries:
-                try:
-                    time = entry.updated
-                except:
-                    try:
-                        time = entry.published
-                    except:
-                        pass
-                if time:
-                    dtime = self.mktime(time)
-                if not pubdate or dtime > pubdate:
-                    mail = ''
-                    try:
-                        mail = TEMPLATE.format(time, entry.title,
-                        feed, entry.link, entry.description)
-                    except:
-                        print(feed, entry)
-                    self.write(mail)
-                if (feed not in newtimes
-                    or dtime > self.mktime(newtimes[title])):
-                    newtimes[title] = time
+        # for feed in self.news:
+        #     message = self.compose()
+        #     self.write()
 
-        try: # to write the new database
-            with open(self.db, 'w') as f:
-                f.write(json.dumps(newtimes))
-        except:
-            self.output('WARNING: failed to write the new database')
+    def compose(self, post):
+        """Compose the mail using the tempate"""
+        return ''
 
     def write(self, message):
         """Take a message and write it to a mail"""

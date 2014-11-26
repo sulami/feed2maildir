@@ -46,39 +46,47 @@ class ConverterTestCase(unittest.TestCase):
             f.write(json.dumps(self.test))
 
     def test_read_nonexistent_db(self):
-        converter = Converter([], db='/nothing')
+        converter = Converter(db='/nothing')
         self.assertIsNone(converter.dbdata)
 
     def test_read_invalid_db(self):
         with open('/tmp/gibber', 'w') as f:
             f.write('gibberish')
-        converter = Converter([], db='/tmp/gibber', silent=True)
+        converter = Converter(db='/tmp/gibber', silent=True)
         self.assertIsNone(converter.dbdata)
 
     def test_read_valid_db(self):
-        converter = Converter([], db='/tmp/f2mtest')
+        converter = Converter(db='/tmp/db')
         self.assertIsNotNone(converter.dbdata)
 
     def test_convert_valid_input(self):
-        converter = Converter(self.test)
+        converter = Converter(db='/tmp/db')
+        converter.load(self.test)
         self.assertEqual(len(converter.feeds), 1)
         self.assertEqual(len(converter.feeds[0]), 2)
 
     def test_fail_to_make_maildir(self):
-        converter = Converter([], maildir='/maildir', db='/tmp/db',
-                              silent=True)
+        converter = Converter(maildir='/maildir', db='/tmp/db', silent=True)
         with self.assertRaises(SystemExit):
             converter.writeout()
         self.assertFalse(os.access('/maildir', os.F_OK))
 
     def test_make_maildir(self):
-        converter = Converter([], maildir='/tmp/maildir', db='/tmp/db')
+        converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
         converter.writeout()
         self.assertTrue(os.access('/tmp/maildir', os.F_OK))
         self.assertTrue(os.access('/tmp/maildir/tmp', os.F_OK))
         self.assertTrue(os.access('/tmp/maildir/new', os.F_OK))
         self.assertTrue(os.access('/tmp/maildir/cur', os.F_OK))
         shutil.rmtree('/tmp/maildir')
+
+    def test_composer(self):
+        converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
+        self.assertEqual(converter.compose(self.test), '')
+
+    def test_find_new_posts(self):
+        converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
+        # converter.find_new()
 
 if __name__ == '__main__':
     unittest.main()

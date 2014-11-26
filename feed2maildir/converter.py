@@ -8,7 +8,7 @@ import sys
 if sys.version[0] == '2':
     FileNotFoundError = IOError
 
-TEMPLATE = """MIME-Version: 1.0
+TEMPLATE = u"""MIME-Version: 1.0
 Date: {}
 Subject: [{}] {}
 From: {}
@@ -79,10 +79,11 @@ class Converter:
         dt = str(datetime.datetime.now())
         pid = str(os.getpid())
         host = os.uname()[1]
-        name = '{}/new/{}{}{}{}'.format(self.maildir, rand, dt, pid, host)
+        name = u'{}/new/{}{}{}{}'.format(self.maildir, rand, dt, pid, host)
         try: # to write out the message
-            with open(name, 'w', encoding='utf-8') as f:
-                f.write(message)
+            with open(name, 'w') as f:
+                # We can thank the P2/P3 unicode madness for this...
+                f.write(str(message.encode('utf8')))
         except:
             self.output('WARNING: failed to write message to file')
 

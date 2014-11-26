@@ -12,7 +12,7 @@ class Loader:
                 self.config = json.loads(f.read())
         except: # Use default config
             self.output('WARNING: could not open config "{}"'.format(config))
-            self.config = {'feeds': {}}
+            self.config = {'feeds': {}, 'db': None, 'maildir': None}
 
     def output(self, arg):
         if not self.silent:

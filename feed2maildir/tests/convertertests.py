@@ -11,8 +11,9 @@ from feed2maildir.converter import Converter
 class ConverterTestCase(unittest.TestCase):
     def setUp(self):
         # Construct something the reader is expected to spit out
-        self.test = {
-            'testblog': {
+        # XXX this is a list of dicts, not feedparser-dicts (!)
+        self.test = [
+            {
                 'feed': {
                     'title': u'testblog',
                     'link': u'http://example.org',
@@ -39,38 +40,39 @@ class ConverterTestCase(unittest.TestCase):
                     },
                 ],
             }
-        }
+        ]
         # Write it into a test db to compare against
         with open('/tmp/f2mtest', 'w') as f:
             f.write(json.dumps(self.test))
 
     def test_read_nonexistent_db(self):
-        converter = Converter({}, db='/nothing')
+        converter = Converter([], db='/nothing')
         self.assertIsNone(converter.dbdata)
 
     def test_read_invalid_db(self):
         with open('/tmp/gibber', 'w') as f:
             f.write('gibberish')
-        converter = Converter({}, db='/tmp/gibber', silent=True)
+        converter = Converter([], db='/tmp/gibber', silent=True)
         self.assertIsNone(converter.dbdata)
 
     def test_read_valid_db(self):
-        converter = Converter({}, db='/tmp/f2mtest')
+        converter = Converter([], db='/tmp/f2mtest')
         self.assertIsNotNone(converter.dbdata)
 
     def test_convert_valid_input(self):
         converter = Converter(self.test)
         self.assertEqual(len(converter.feeds), 1)
-        self.assertEqual(len(converter.feeds['testblog']), 2)
+        self.assertEqual(len(converter.feeds[0]), 2)
 
     def test_fail_to_make_maildir(self):
-        converter = Converter(self.test, maildir='/maildir', silent=True)
+        converter = Converter([], maildir='/maildir', db='/tmp/db',
+                              silent=True)
         with self.assertRaises(SystemExit):
             converter.writeout()
         self.assertFalse(os.access('/maildir', os.F_OK))
 
     def test_make_maildir(self):
-        converter = Converter(self.test, maildir='/tmp/maildir')
+        converter = Converter([], maildir='/tmp/maildir', db='/tmp/db')
         converter.writeout()
         self.assertTrue(os.access('/tmp/maildir', os.F_OK))
         self.assertTrue(os.access('/tmp/maildir/tmp', os.F_OK))

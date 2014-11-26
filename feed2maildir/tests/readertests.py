@@ -9,7 +9,7 @@ class ReaderTestCase(unittest.TestCase):
     def test_read_no_feeds(self):
         testfeed = {}
         reader = feed2maildir.reader.Reader(testfeed)
-        self.assertEqual(reader.feeds, {})
+        self.assertEqual(reader.feeds, [])
 
     def test_read_some_raw_data(self):
         testfeed = {'Blog': """<rss version="2.0">
@@ -18,7 +18,7 @@ class ReaderTestCase(unittest.TestCase):
                                </channel>
                                </rss>"""}
         reader = feed2maildir.reader.Reader(testfeed)
-        self.assertEqual(reader.feeds['Blog'].feed.title, 'Toast')
+        self.assertEqual(reader.feeds[0].feed.title, 'Toast')
 
     def test_read_fail(self):
         testfeed = {'Blog': 'gibberish'}

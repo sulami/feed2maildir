@@ -56,17 +56,18 @@ class Converter:
                 sys.exit('ERROR: accessing "{}" failed'.format(self.maildir))
 
         newtimes = {}
-        for feed, content in self.feeds.items():
+        for feed in self.feeds:
+            title = feed.feed.title
             try: # to find the last update time for the feed in the db
-                pubdate = self.mktime(self.dbdata[feed])
+                pubdate = self.mktime(self.dbdata[title])
             except: # there is no record, mail all entries
                 pubdate = None
-            for entry in content['entries']:
+            for entry in feed.entries:
                 try:
-                    time = entry['updated']
+                    time = entry.updated
                 except:
                     try:
-                        time = entry['published']
+                        time = entry.published
                     except:
                         pass
                 if time:
@@ -74,13 +75,14 @@ class Converter:
                 if not pubdate or dtime > pubdate:
                     mail = ''
                     try:
-                        mail = TEMPLATE.format(time, entry['title'],
-                        feed, entry['link'], entry['description'])
+                        mail = TEMPLATE.format(time, entry.title,
+                        feed, entry.link, entry.description)
                     except:
                         print(feed, entry)
                     self.write(mail)
-                if feed not in newtimes or dtime > self.mktime(newtimes[feed]):
-                    newtimes[feed] = time
+                if (feed not in newtimes
+                    or dtime > self.mktime(newtimes[title])):
+                    newtimes[title] = time
 
         try: # to write the new database
             with open(self.db, 'w') as f:

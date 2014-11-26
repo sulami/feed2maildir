@@ -43,7 +43,10 @@ class Converter:
 
     def writeout(self):
         """Check which updates need to be written to the maildir"""
-        if not os.access(self.maildir, os.W_OK):
+        if (not os.access(self.maildir, os.W_OK)
+            or not os.access(self.maildir + '/tmp', os.W_OK)
+            or not os.access(self.maildir + '/new', os.W_OK)
+            or not os.access(self.maildir + '/cur', os.W_OK)):
             try: # to make the maildir
                 os.mkdir(self.maildir)
                 os.mkdir('{}/tmp'.format(self.maildir))

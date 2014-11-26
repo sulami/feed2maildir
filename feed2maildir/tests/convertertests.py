@@ -58,11 +58,6 @@ class ConverterTestCase(unittest.TestCase):
         converter = Converter({}, db='/tmp/f2mtest')
         self.assertIsNotNone(converter.dbdata)
 
-    def test_convert_invalid_input(self):
-        converter = Converter({'feed': 'gibberish'}, db='/tmp/f2mtest',
-                              silent=True)
-        self.assertEqual(len(converter.feeds), 0)
-
     def test_convert_valid_input(self):
         converter = Converter(self.test)
         self.assertEqual(len(converter.feeds), 1)

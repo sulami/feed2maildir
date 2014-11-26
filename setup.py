@@ -19,6 +19,7 @@ setup(name='feed2maildir',
       zip_safe=False,
       install_requires=[
           'feedparser>=5.1.3',
+          'python-dateutil>=2.2',
       ],
       classifiers=[
           'Development Status :: 3 - Alpha',

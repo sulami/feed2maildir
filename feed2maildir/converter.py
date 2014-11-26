@@ -4,13 +4,15 @@ import os
 import random
 import sys
 
+import dateutil.parser
+
 # Python 2.x compabitlity
 if sys.version[0] == '2':
     FileNotFoundError = IOError
 
 TEMPLATE = u"""MIME-Version: 1.0
 Date: {}
-Subject: [{}] {}
+Subject: {}
 From: {}
 Content-Type: text/plain
 
@@ -39,18 +41,6 @@ class Converter:
             self.output('WARNING: database is malformed and will be ignored')
             self.dbdata = None
 
-        inval = []
-        for feed, content in self.feeds.items():
-            try: # to validate the feeds, access some essential keys
-                content['feed']['title']
-                content['feed']['link']
-                content['feed']['updated']
-            except:
-                self.output('WARNING: feed {} seems to be broken'.format(feed))
-                inval.append(feed)
-        for i in inval: # pop invalid feeds
-            self.feeds.pop(i)
-
     def writeout(self):
         """Check which updates need to be written to the maildir"""
         if not os.access(self.maildir, os.W_OK):
@@ -69,14 +59,25 @@ class Converter:
             except: # there is no record, mail all entries
                 pubdate = None
             for entry in content['entries']:
-                time = self.mktime(entry['published'])
-                if not pubdate or time > pubdate:
-                    mail = TEMPLATE.format(entry['published'],
-                    entry['author'], entry['title'], feed, entry['link'],
-                    entry['description'])
+                try:
+                    time = entry['updated']
+                except:
+                    try:
+                        time = entry['published']
+                    except:
+                        pass
+                if time:
+                    dtime = self.mktime(time)
+                if not pubdate or dtime > pubdate:
+                    mail = ''
+                    try:
+                        mail = TEMPLATE.format(time, entry['title'],
+                        feed, entry['link'], entry['description'])
+                    except:
+                        print(feed, entry)
                     self.write(mail)
-                if feed not in newtimes or time > self.mktime(newtimes[feed]):
-                    newtimes[feed] = entry['published']
+                if feed not in newtimes or dtime > self.mktime(newtimes[feed]):
+                    newtimes[feed] = time
 
         try: # to write the new database
             with open(self.db, 'w') as f:
@@ -103,9 +104,7 @@ class Converter:
 
     def mktime(self, arg):
         """Make a datetime object from a time string"""
-        # This is due to the fantastic built-in strptime >.<
-        return datetime.datetime.strptime(' '.join(arg.split(' ')[0:5]),
-                                          '%a, %d %b %Y %X')
+        return dateutil.parser.parse(arg)
 
     def output(self, arg):
         if not self.silent:

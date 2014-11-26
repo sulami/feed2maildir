@@ -12,6 +12,7 @@ TEMPLATE = """MIME-Version: 1.0
 Date: {}
 Subject: [{}] {}
 From: {}
+Content-Type: text/plain
 
 [Feed2Maildir] Read the update here:
 {}

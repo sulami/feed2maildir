@@ -21,6 +21,7 @@ setup(name='feed2maildir',
           'feedparser>=5.1.3',
           'python-dateutil>=2.2',
       ],
+      scripts=['scripts/feed2maildir',],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'License :: OSI Approved :: ISC License (ISCL)',

@@ -13,6 +13,3 @@ def main():
     converter.load(reader.feeds)
     converter.run()
 
-if __name__ == '__main__':
-    main()
-

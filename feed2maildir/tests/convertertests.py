@@ -91,6 +91,14 @@ class ConverterTestCase(unittest.TestCase):
             '\n[Feed2Maildir] Read the update here:\nhttp://example.org\n\n'
             'this is a post\n'))
 
+    def test_mktime(self):
+        from datetime import datetime, tzinfo
+        converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
+        t = converter.mktime(u'Sun, 08 Sep 2002 00:00:01 GMT').replace(
+            tzinfo=None) # datetime can't handle tzinfo
+        tt = datetime.strptime('2002-09-08 00:00:01', '%Y-%m-%d %H:%M:%S')
+        self.assertEqual(t, tt)
+
     def test_find_new_posts(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
         new = converter.find_new([], [])

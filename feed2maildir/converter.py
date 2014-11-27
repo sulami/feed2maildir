@@ -44,11 +44,9 @@ Content-Type: text/plain
         """Do a full run"""
         if self.feeds:
             self.check_maildir(self.maildir)
-            self.news = self.find_new(self.feeds, self.db)
-            for newfeed in self.news:
-                feedname = newfeed.feed.title
-                for newpost in newfeed:
-                    self.write(self.compose(feedname, newpost))
+            self.news = self.find_new(self.feeds, self.dbdata)
+            for newpost in self.news:
+                self.write(self.compose('Feed2Maildir', newpost))
 
     def load(self, feeds):
         """Load a list of feeds in feedparser-dict form"""
@@ -65,12 +63,26 @@ Content-Type: text/plain
                 feedup = self.mktime(feed.feed.updated)
             except: # there is no info, then find it in the posts
                 feedup = self.find_update_time(feed)
-            if feedname in db and self.mktime(db[feedname]) < feedup:
+            try: # to localize the timezone
+                feedup = feedup.astimezone(dateutil.tz.tzutc())
+            except: # it is naive, force UTC
+                feedup = feedup.replace(tzinfo=dateutil.tz.tzutc())
+            try: # to find the old update time in the db
+                oldtime = self.mktime(db[feedname]).astimezone(
+                            dateutil.tz.tzutc())
+            except: # it is not there
+                oldtime = None
+            if oldtime and not oldtime.tzinfo: # force UTC
+                oldtime = oldtime.replace(tzinfo=dateutil.tz.tzutc())
+            # print(feedname, feedup.tzinfo)
+            if not oldtime or oldtime < feedup:
                 for post in feed.entries:
-                    if self.mktime(post.updated) > self.mktime(db[feedname]):
+                    feedtime = self.mktime(post.updated).astimezone(
+                                dateutil.tz.tzutc())
+                    if not oldtime or oldtime < feedtime:
                         new.append(post)
             if writedb:
-                newtimes[feedname] = feedup.strftime('%Y-%m-%d %H:%M:%S')
+                newtimes[feedname] = feedup.strftime('%Y-%m-%d %H:%M:%S %Z')
 
         if writedb:
             if not dbfile: # use own dbfile as default

@@ -103,7 +103,7 @@ class ConverterTestCase(unittest.TestCase):
 
     def test_find_new_posts(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
-        fauxdbdata = {u'testblog': u'Sun, 08 Sep 2002 00:00:01 GMT'}
+        fauxdbdata = {u'testblog': u'Sun, 08 Sep 2002 00:00:04 GMT'}
         new = converter.find_new(self.test, fauxdbdata, writedb=False)
         self.assertEqual(len(new), 0)
         fauxdbdata = {u'testblog': u'Sat, 07 Sep 2002 00:00:01 GMT'}
@@ -133,7 +133,7 @@ class ConverterTestCase(unittest.TestCase):
                            dbfile='/tmp/fauxdb')
         with open('/tmp/fauxdb', 'r') as f:
             written = json.loads(f.read())
-        desire = {u'testblog': u'2002-09-08 00:00:01'}
+        desire = {u'testblog': u'2002-09-08 00:00:01 UTC'}
         self.assertEqual(written, desire)
         os.remove('/tmp/fauxdb')
 

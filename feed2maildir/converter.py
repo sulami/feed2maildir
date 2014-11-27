@@ -41,12 +41,22 @@ Content-Type: text/plain
             self.output('WARNING: database is malformed and will be ignored')
             self.dbdata = None
 
+    def run(self):
+        """Do a full run"""
+        if self.feeds:
+            self.checkmaildir(self.maildir)
+            self.find_new(self.feeds, self.db)
+            for newfeed in self.news:
+                feedname = newfeed.feed.title
+                for newpost in newfeed:
+                    self.write(self.compose(feedname, newpost))
+
     def load(self, feeds):
         """Load a list of feeds in feedparser-dict form"""
         self.feeds = feeds
 
     def find_new(self, feeds, db):
-        """Find the new posts from within self.feeds by comparing to the db"""
+        """Find the new posts by comparing them to the db"""
         return None
         # try: # to write the new database
         #     with open(self.db, 'w') as f:

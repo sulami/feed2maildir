@@ -13,7 +13,8 @@ Usage
 -----
 
 Just run ``feed2maildir``, which should be placed in your $PATH by setup.py.
-You will need a JSON configuration file that looks like this:
+You will need a JSON configuration file at ``$HOME/.f2mrc`` that looks like
+this:
 
 .. code-block:: json
 

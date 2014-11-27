@@ -54,9 +54,11 @@ Content-Type: text/plain
         """Load a list of feeds in feedparser-dict form"""
         self.feeds = feeds
 
-    def find_new(self, feeds, db):
-        """Find the new posts by comparing them to the db"""
+    def find_new(self, feeds, db, writedb=True, dbfile=None):
+        """Find the new posts by comparing them to the db, by default
+        refreshing the db"""
         new = []
+        newtimes = {}
         for feed in feeds:
             feedname = feed.feed.title
             feedup = feed.feed.updated
@@ -64,12 +66,19 @@ Content-Type: text/plain
                 for post in feed.entries:
                     if post.updated > db[feedname]:
                         new.append(post)
+            if writedb:
+                newtimes[feedname] = feedup
+
+        if writedb:
+            if not dbfile: # use own dbfile as default
+                dbfile = self.db
+            try: # to write the new database
+                with open(dbfile, 'w') as f:
+                    f.write(json.dumps(newtimes))
+            except:
+                self.output('WARNING: failed to write the new database')
+
         return new
-        # try: # to write the new database
-        #     with open(self.db, 'w') as f:
-        #         f.write(json.dumps(newtimes))
-        # except:
-        #     self.output('WARNING: failed to write the new database')
 
     def checkmaildir(self, maildir):
         """Check access to the maildir and try to create it if not present"""

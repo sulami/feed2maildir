@@ -104,14 +104,31 @@ class ConverterTestCase(unittest.TestCase):
     def test_find_new_posts(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
         fauxdbdata = {u'testblog': u'Sun, 08 Sep 2002 00:00:01 GMT'}
-        new = converter.find_new(self.test, fauxdbdata)
+        new = converter.find_new(self.test, fauxdbdata, writedb=False)
         self.assertEqual(len(new), 0)
         fauxdbdata = {u'testblog': u'Sat, 07 Sep 2002 00:00:01 GMT'}
-        new = converter.find_new(self.test, fauxdbdata)
+        new = converter.find_new(self.test, fauxdbdata, writedb=False)
         self.assertEqual(len(new), 1)
         fauxdbdata = {u'testblog': u'Fri, 06 Sep 2002 00:00:01 GMT'}
-        new = converter.find_new(self.test, fauxdbdata)
+        new = converter.find_new(self.test, fauxdbdata, writedb=False)
         self.assertEqual(len(new), 2)
+
+    def test_write_db(self):
+        converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
+        try: # to delete what we are about to make
+            os.remove('/tmp/fauxdb')
+        except: # it is not there
+            pass
+        finally: # make sure is is not there
+            self.assertFalse(os.access('/tmp/fauxdb', os.F_OK))
+        fauxdbdata = {u'testblog': u'Sun, 08 Sep 2002 00:00:01 GMT'}
+        converter.find_new(self.test, fauxdbdata, writedb=True,
+                           dbfile='/tmp/fauxdb')
+        with open('/tmp/fauxdb', 'r') as f:
+            written = json.loads(f.read())
+        desire = {u'testblog': u'Sun, 08 Sep 2002 00:00:01 GMT'}
+        self.assertEqual(written, desire)
+        os.remove('/tmp/fauxdb')
 
 if __name__ == '__main__':
     unittest.main()

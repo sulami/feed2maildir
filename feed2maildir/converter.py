@@ -43,7 +43,7 @@ Content-Type: text/plain
     def run(self):
         """Do a full run"""
         if self.feeds:
-            self.checkmaildir(self.maildir)
+            self.check_maildir(self.maildir)
             self.news = self.find_new(self.feeds, self.db)
             for newfeed in self.news:
                 feedname = newfeed.feed.title
@@ -80,7 +80,7 @@ Content-Type: text/plain
 
         return new
 
-    def checkmaildir(self, maildir):
+    def check_maildir(self, maildir):
         """Check access to the maildir and try to create it if not present"""
         mdirs = ('', '/tmp', '/new', '/cur')
         for mdir in mdirs:

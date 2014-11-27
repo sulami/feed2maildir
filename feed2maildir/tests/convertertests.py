@@ -70,13 +70,13 @@ class ConverterTestCase(unittest.TestCase):
     def test_fail_to_make_maildir(self):
         converter = Converter(maildir='/maildir', db='/tmp/db', silent=True)
         with self.assertRaises(SystemExit):
-            converter.checkmaildir('/maildir')
+            converter.check_maildir('/maildir')
         self.assertFalse(os.access('/maildir', os.F_OK))
 
     def test_make_maildir(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
         self.assertFalse(os.access('/tmp/maildir', os.F_OK))
-        converter.checkmaildir('/tmp/maildir')
+        converter.check_maildir('/tmp/maildir')
         self.assertTrue(os.access('/tmp/maildir', os.W_OK))
         self.assertTrue(os.access('/tmp/maildir/tmp', os.W_OK))
         self.assertTrue(os.access('/tmp/maildir/new', os.W_OK))

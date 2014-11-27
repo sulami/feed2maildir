@@ -70,17 +70,19 @@ class ConverterTestCase(unittest.TestCase):
     def test_fail_to_make_maildir(self):
         converter = Converter(maildir='/maildir', db='/tmp/db', silent=True)
         with self.assertRaises(SystemExit):
-            converter.writeout()
+            converter.checkmaildir('/maildir')
         self.assertFalse(os.access('/maildir', os.F_OK))
 
     def test_make_maildir(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
-        converter.writeout()
-        self.assertTrue(os.access('/tmp/maildir', os.F_OK))
-        self.assertTrue(os.access('/tmp/maildir/tmp', os.F_OK))
-        self.assertTrue(os.access('/tmp/maildir/new', os.F_OK))
-        self.assertTrue(os.access('/tmp/maildir/cur', os.F_OK))
-        shutil.rmtree('/tmp/maildir')
+        self.assertFalse(os.access('/tmp/maildir', os.F_OK))
+        converter.checkmaildir('/tmp/maildir')
+        self.assertTrue(os.access('/tmp/maildir', os.W_OK))
+        self.assertTrue(os.access('/tmp/maildir/tmp', os.W_OK))
+        self.assertTrue(os.access('/tmp/maildir/new', os.W_OK))
+        self.assertTrue(os.access('/tmp/maildir/cur', os.W_OK))
+        shutil.rmtree('/tmp/maildir') # Clean up
+        self.assertFalse(os.access('/tmp/maildir', os.F_OK))
 
     def test_composer(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')

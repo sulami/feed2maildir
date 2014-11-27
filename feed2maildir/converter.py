@@ -54,19 +54,16 @@ Content-Type: text/plain
         # except:
         #     self.output('WARNING: failed to write the new database')
 
-    def writeout(self):
-        """Write out self.news to a maildir"""
-        if (not os.access(self.maildir, os.W_OK)
-            or not os.access(self.maildir + '/tmp', os.W_OK)
-            or not os.access(self.maildir + '/new', os.W_OK)
-            or not os.access(self.maildir + '/cur', os.W_OK)):
-            try: # to make the maildir
-                os.mkdir(self.maildir)
-                os.mkdir('{}/tmp'.format(self.maildir))
-                os.mkdir('{}/new'.format(self.maildir))
-                os.mkdir('{}/cur'.format(self.maildir))
-            except:
-                sys.exit('ERROR: accessing "{}" failed'.format(self.maildir))
+    def checkmaildir(self, maildir):
+        """Check access to the maildir and try to create it if not present"""
+        mdirs = ('', '/tmp', '/new', '/cur')
+        for mdir in mdirs:
+            fullname = maildir + mdir
+            if not os.access(fullname, os.W_OK):
+                try: # to make the maildirs
+                    os.mkdir(fullname)
+                except:
+                    sys.exit('ERROR: accessing "{}" failed'.format(fullname))
 
     def compose(self, title, post):
         """Compose the mail using the tempate"""

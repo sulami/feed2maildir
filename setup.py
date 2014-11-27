@@ -23,7 +23,7 @@ setup(name='feed2maildir',
       ],
       scripts=['scripts/feed2maildir',],
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 4 - Beta',
           'License :: OSI Approved :: ISC License (ISCL)',
           'Environment :: Console',
           'Intended Audience :: End Users/Desktop',

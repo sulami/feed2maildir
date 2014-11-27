@@ -113,6 +113,13 @@ class ConverterTestCase(unittest.TestCase):
         new = converter.find_new(self.test, fauxdbdata, writedb=False)
         self.assertEqual(len(new), 2)
 
+    def test_find_update_time(self):
+        from datetime import datetime
+        converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
+        t = converter.find_update_time(self.testfeed).replace(tzinfo=None)
+        tt = datetime.strptime('2002-09-08 00:00:01', '%Y-%m-%d %H:%M:%S')
+        self.assertEqual(t, tt)
+
     def test_write_db(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
         try: # to delete what we are about to make
@@ -126,7 +133,7 @@ class ConverterTestCase(unittest.TestCase):
                            dbfile='/tmp/fauxdb')
         with open('/tmp/fauxdb', 'r') as f:
             written = json.loads(f.read())
-        desire = {u'testblog': u'Sun, 08 Sep 2002 00:00:01 GMT'}
+        desire = {u'testblog': u'2002-09-08 00:00:01'}
         self.assertEqual(written, desire)
         os.remove('/tmp/fauxdb')
 

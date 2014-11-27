@@ -61,13 +61,16 @@ Content-Type: text/plain
         newtimes = {}
         for feed in feeds:
             feedname = feed.feed.title
-            feedup = feed.feed.updated
-            if feedname in db and db[feedname] < feedup:
+            try: # to get the update time from the feed itself
+                feedup = self.mktime(feed.feed.updated)
+            except: # there is no info, then find it in the posts
+                feedup = self.find_update_time(feed)
+            if feedname in db and self.mktime(db[feedname]) < feedup:
                 for post in feed.entries:
-                    if post.updated > db[feedname]:
+                    if self.mktime(post.updated) > self.mktime(db[feedname]):
                         new.append(post)
             if writedb:
-                newtimes[feedname] = feedup
+                newtimes[feedname] = feedup.strftime('%Y-%m-%d %H:%M:%S')
 
         if writedb:
             if not dbfile: # use own dbfile as default
@@ -79,6 +82,13 @@ Content-Type: text/plain
                 self.output('WARNING: failed to write the new database')
 
         return new
+
+    def find_update_time(self, feed):
+        """Find the last updated post in a feed"""
+        times = []
+        for post in feed.entries:
+            times.append(self.mktime(post.updated))
+        return sorted(times)[-1]
 
     def check_maildir(self, maildir):
         """Check access to the maildir and try to create it if not present"""

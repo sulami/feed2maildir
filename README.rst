@@ -15,7 +15,7 @@ Usage
 Just run ``feed2maildir``, which should be placed in your $PATH by setup.py.
 You will need a JSON configuration file that looks like this:
 
-.. codeblock:: json
+.. code-block:: json
 
     {
         "db": "~/.f2mdb",

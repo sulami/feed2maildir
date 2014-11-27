@@ -9,9 +9,9 @@ def main():
     loader = Loader()
     config = loader.config
     reader = Reader(config['feeds'])
-    converter = Converter(reader.feeds, db=config['db'],
-                          maildir=config['maildir'])
-    converter.writeout()
+    converter = Converter(db=config['db'], maildir=config['maildir'])
+    converter.load(reader.feeds)
+    converter.run()
 
 if __name__ == '__main__':
     main()

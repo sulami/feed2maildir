@@ -103,8 +103,15 @@ class ConverterTestCase(unittest.TestCase):
 
     def test_find_new_posts(self):
         converter = Converter(maildir='/tmp/maildir', db='/tmp/db')
-        new = converter.find_new([], [])
-        self.assertEqual(new, None)
+        fauxdbdata = {u'testblog': u'Sun, 08 Sep 2002 00:00:01 GMT'}
+        new = converter.find_new(self.test, fauxdbdata)
+        self.assertEqual(len(new), 0)
+        fauxdbdata = {u'testblog': u'Sat, 07 Sep 2002 00:00:01 GMT'}
+        new = converter.find_new(self.test, fauxdbdata)
+        self.assertEqual(len(new), 1)
+        fauxdbdata = {u'testblog': u'Fri, 06 Sep 2002 00:00:01 GMT'}
+        new = converter.find_new(self.test, fauxdbdata)
+        self.assertEqual(len(new), 2)
 
 if __name__ == '__main__':
     unittest.main()

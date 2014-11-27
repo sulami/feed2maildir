@@ -10,7 +10,6 @@ import dateutil.parser
 if sys.version[0] == '2':
     FileNotFoundError = IOError
 
-
 class Converter:
     """Compares the already parsed feeds and converts new ones to maildir"""
 
@@ -45,7 +44,7 @@ Content-Type: text/plain
         """Do a full run"""
         if self.feeds:
             self.checkmaildir(self.maildir)
-            self.find_new(self.feeds, self.db)
+            self.news = self.find_new(self.feeds, self.db)
             for newfeed in self.news:
                 feedname = newfeed.feed.title
                 for newpost in newfeed:
@@ -57,7 +56,15 @@ Content-Type: text/plain
 
     def find_new(self, feeds, db):
         """Find the new posts by comparing them to the db"""
-        return None
+        new = []
+        for feed in feeds:
+            feedname = feed.feed.title
+            feedup = feed.feed.updated
+            if feedname in db and db[feedname] < feedup:
+                for post in feed.entries:
+                    if post.updated > db[feedname]:
+                        new.append(post)
+        return new
         # try: # to write the new database
         #     with open(self.db, 'w') as f:
         #         f.write(json.dumps(newtimes))

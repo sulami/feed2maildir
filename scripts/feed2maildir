@@ -1,7 +1,43 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from feed2maildir.main import main
+import argparse
+import sys
 
-main()
+from feed2maildir.converter import Converter
+from feed2maildir.loader import Loader
+from feed2maildir.reader import Reader
+
+def main():
+    parser = argparse.ArgumentParser(description='Convert Feeds to a maildir')
+    parser.add_argument('-c', nargs=1, metavar='<file>',
+                        help='override the config file location (~/.f2mrc)')
+    parser.add_argument('-d', nargs=1, metavar='<file>',
+                        help='override the database file location (~/.f2mdb)')
+    parser.add_argument('-m', nargs=1, metavar='<dir>',
+                        help='override the maildir location (None)')
+    args = vars(parser.parse_args())
+
+    if args['c']:
+        loader = Loader(config=args['c'])
+    else:
+        loader = Loader()
+    config = loader.config
+    reader = Reader(config['feeds'])
+
+    if args['d']:
+        db = args['d']
+    else:
+        db = config['db']
+    if args['m']:
+        maildir = args['m']
+    else:
+        maildir = config['maildir']
+
+    converter = Converter(db=db, maildir=maildir)
+    converter.load(reader.feeds)
+    converter.run()
+
+if __name__ == '__main__':
+    main()
 

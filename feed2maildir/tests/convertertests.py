@@ -109,9 +109,11 @@ class ConverterTestCase(unittest.TestCase):
         fauxdbdata = {u'testblog': u'Sat, 07 Sep 2002 00:00:01 GMT'}
         new = converter.find_new(self.test, fauxdbdata, writedb=False)
         self.assertEqual(len(new), 1)
+        self.assertEqual(len(new[u'testblog']), 1)
         fauxdbdata = {u'testblog': u'Fri, 06 Sep 2002 00:00:01 GMT'}
         new = converter.find_new(self.test, fauxdbdata, writedb=False)
-        self.assertEqual(len(new), 2)
+        self.assertEqual(len(new), 1)
+        self.assertEqual(len(new[u'testblog']), 2)
 
     def test_find_update_time(self):
         from datetime import datetime

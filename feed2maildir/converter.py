@@ -45,8 +45,9 @@ Content-Type: text/plain
         if self.feeds:
             self.check_maildir(self.maildir)
             self.news = self.find_new(self.feeds, self.dbdata)
-            for newpost in self.news:
-                self.write(self.compose('Feed2Maildir', newpost))
+            for newfeed in self.news:
+                for newpost in newfeed:
+                    self.write(self.compose(newfeed, newpost))
 
     def load(self, feeds):
         """Load a list of feeds in feedparser-dict form"""
@@ -55,7 +56,7 @@ Content-Type: text/plain
     def find_new(self, feeds, db, writedb=True, dbfile=None):
         """Find the new posts by comparing them to the db, by default
         refreshing the db"""
-        new = []
+        new = {}
         newtimes = {}
         for feed in feeds:
             feedname = feed.feed.title
@@ -83,7 +84,10 @@ Content-Type: text/plain
                     except: # it is naive
                         feedtime = feedtime.replace(tzinfo=dateutil.tz.tzutc())
                     if not oldtime or oldtime < feedtime:
-                        new.append(post)
+                        try: # to append the post the the feed-list
+                            new[feedname].append(post)
+                        except: # it is the first one, make a new list
+                            new[feedname] = [post, ]
             if writedb:
                 newtimes[feedname] = feedup.strftime('%Y-%m-%d %H:%M:%S %Z')
 

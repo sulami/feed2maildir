@@ -77,8 +77,11 @@ Content-Type: text/plain
             # print(feedname, feedup.tzinfo)
             if not oldtime or oldtime < feedup:
                 for post in feed.entries:
-                    feedtime = self.mktime(post.updated).astimezone(
-                                dateutil.tz.tzutc())
+                    feedtime = self.mktime(post.updated)
+                    try: # to localize the timezone
+                        feedtime = feedtime.astimezone(dateutil.tz.tzutc())
+                    except: # it is naive
+                        feedtime = feedtime.replace(tzinfo=dateutil.tz.tzutc())
                     if not oldtime or oldtime < feedtime:
                         new.append(post)
             if writedb:

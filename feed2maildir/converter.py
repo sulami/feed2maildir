@@ -122,7 +122,11 @@ Content-Type: text/plain
 
     def compose(self, title, post):
         """Compose the mail using the tempate"""
-        return self.TEMPLATE.format(post.updated, post.title, title, post.link,
+        try: # to get the update/publish time from the post
+            updated = post.updated
+        except: # the property is not set, use now()
+            updated = datetime.datetime.now()
+        return self.TEMPLATE.format(updated, post.title, title, post.link,
                                     post.description)
 
     def write(self, message):

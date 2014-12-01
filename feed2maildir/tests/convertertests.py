@@ -6,7 +6,7 @@ import os
 import shutil
 import unittest
 
-from feed2maildir.converter import Converter
+from feed2maildir.converter import Converter, HTMLStripper
 
 class AttrDict(dict):
     """This is a dict that can be accessed via attributes, just like the
@@ -138,6 +138,18 @@ class ConverterTestCase(unittest.TestCase):
         desire = {u'testblog': u'2002-09-08 00:00:01 UTC'}
         self.assertEqual(written, desire)
         os.remove('/tmp/fauxdb')
+
+    def test_html_stripper(self):
+        teststring = """<!DOCTYPE html><html><head><title>test</title></head>
+<body><h1>Header</h1>
+<span class="foobar">content</span>
+<img src="https://www.google.de//images/srpr/logo11w.png" /></body> </html>"""
+        desire = """test\nHeader\ncontent
+[Image]: https://www.google.de//images/srpr/logo11w.png\n """
+        stripper = HTMLStripper()
+        stripper.feed(teststring)
+        out = stripper.get_data()
+        self.assertEqual(out, desire)
 
 if __name__ == '__main__':
     unittest.main()

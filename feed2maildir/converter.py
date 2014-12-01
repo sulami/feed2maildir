@@ -4,11 +4,37 @@ import os
 import random
 import sys
 
+if sys.version[0] == '2':
+    from HTMLParser import HTMLParser
+else:
+    from html.parser import HTMLParser
+
 import dateutil.parser
 
 # Python 2.x compabitlity
 if sys.version[0] == '2':
     FileNotFoundError = IOError
+
+class HTMLStripper(HTMLParser):
+    """Strips HTML off an string"""
+    def __init__(self):
+        self.reset()
+        self.strict = False
+        self.fed = []
+
+    def handle_data(self, d):
+        self.fed.append(d)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'img':
+            for attr in attrs:
+                if attr[0] == 'src':
+                    link = attr[1]
+                    break;
+            self.fed.append('[Image]: {}\n'.format(link))
+
+    def get_data(self):
+        return ''.join(self.fed)
 
 class Converter:
     """Compares the already parsed feeds and converts new ones to maildir"""

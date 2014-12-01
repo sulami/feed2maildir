@@ -51,11 +51,12 @@ Content-Type: text/plain
 {}
 """
 
-    def __init__(self, db='~/.f2mdb', maildir='~/mail/feeds',
+    def __init__(self, db='~/.f2mdb', maildir='~/mail/feeds', strip=False,
                  silent=False):
         self.silent = silent
         self.maildir = os.path.expanduser(maildir)
         self.db = os.path.expanduser(db)
+        self.strip = strip
 
         try: # to read the database
             with open(self.db, 'r') as f:

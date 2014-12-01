@@ -9,6 +9,8 @@ from feed2maildir.loader import Loader
 from feed2maildir.reader import Reader
 
 def main():
+    strip = False
+
     parser = argparse.ArgumentParser(description='Convert Feeds to a maildir')
     parser.add_argument('-c', nargs=1, metavar='<file>',
                         help='override the config file location (~/.f2mrc)')
@@ -16,6 +18,8 @@ def main():
                         help='override the database file location (~/.f2mdb)')
     parser.add_argument('-m', nargs=1, metavar='<dir>',
                         help='override the maildir location (None)')
+    parser.add_argument('-s', action='store_const', const=strip,
+                        help='strip HTML from the feeds')
     args = vars(parser.parse_args())
 
     if args['c']:
@@ -34,7 +38,7 @@ def main():
     else:
         maildir = config['maildir']
 
-    converter = Converter(db=db, maildir=maildir)
+    converter = Converter(db=db, maildir=maildir, strip=strip)
     converter.load(reader.feeds)
     converter.run()
 

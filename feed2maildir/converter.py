@@ -72,8 +72,8 @@ Content-Type: text/plain
         if self.feeds:
             self.check_maildir(self.maildir)
             self.news = self.find_new(self.feeds, self.dbdata)
-            for newfeed in self.news:
-                for newpost in newfeed:
+            for newfeed, posts in self.news.items():
+                for newpost in posts:
                     self.write(self.compose(newfeed, newpost))
 
     def load(self, feeds):

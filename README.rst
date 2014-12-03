@@ -32,7 +32,7 @@ this:
         }
     }
 
-Note that the last element in a dict may not be followed by a comma, because
+Note that the last element in a dict must not be followed by a comma, because
 Python's json.loads() says so.
 
 There are a bunch of command-line arguments to overwrite the config file:
@@ -48,7 +48,4 @@ There are a bunch of command-line arguments to overwrite the config file:
 
 To check for updates regularly, just toss it into cron to run once every hour
 or so.
-
-Currently, there are a bunch of features missing, most prominently HTML
-parsing, that are planned to be added in the near future.
 

@@ -45,6 +45,7 @@ There are a bunch of command-line arguments to overwrite the config file:
         -d <file>   override the database file location (~/.f2mdb)
         -m <dir>    override the maildir location (None)
         -s          strip HTML from the feeds
+        -l          just write the links without the update
 
 To check for updates regularly, just toss it into cron to run once every hour
 or so.

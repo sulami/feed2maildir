@@ -10,6 +10,7 @@ from feed2maildir.reader import Reader
 
 def main():
     strip = False
+    links = False
 
     parser = argparse.ArgumentParser(description='Convert Feeds to a maildir')
     parser.add_argument('-c', nargs=1, metavar='<file>',

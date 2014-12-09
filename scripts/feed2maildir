@@ -20,6 +20,8 @@ def main():
                         help='override the maildir location (None)')
     parser.add_argument('-s', action='store_const', const=strip,
                         help='strip HTML from the feeds')
+    parser.add_argument('-l', action='store_const', const=links,
+                        help='just write the links without the update')
     args = vars(parser.parse_args())
 
     if args['c']:
@@ -38,7 +40,7 @@ def main():
     else:
         maildir = config['maildir']
 
-    converter = Converter(db=db, maildir=maildir, strip=strip)
+    converter = Converter(db=db, maildir=maildir, strip=strip, links=links)
     converter.load(reader.feeds)
     converter.run()
 

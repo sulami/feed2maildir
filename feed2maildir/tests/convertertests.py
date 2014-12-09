@@ -57,11 +57,13 @@ class ConverterTestCase(unittest.TestCase):
         converter = Converter(db='/tmp/gibber', silent=True)
         self.assertIsNone(converter.dbdata)
 
+
     def test_read_valid_db(self):
         with open('/tmp/db', 'w') as f:
             f.write('{"somefeed": "1970-01-01 00:00:01 UTC"}')
         converter = Converter(db='/tmp/db')
         self.assertIsNotNone(converter.dbdata)
+        os.remove('/tmp/db')
 
     def test_convert_valid_input(self):
         converter = Converter(db='/tmp/db')
@@ -152,6 +154,22 @@ class ConverterTestCase(unittest.TestCase):
         stripper.feed(teststring)
         out = stripper.get_data()
         self.assertEqual(out, desire)
+
+    def test_just_links(self):
+        converter = Converter(db='/tmp/db', maildir='/tmp/maildir', links=True)
+        desire = """MIME-Version: 1.0
+Date: Sat, 07 Sep 2002 00:00:01 GMT
+Subject: post
+From: test
+Content-Type: text/plain
+
+[Feed2Maildir] Read the update here:
+http://example.org
+
+
+"""
+        result = converter.compose('test', self.testfeed.entries[0])
+        self.assertEqual(result, desire)
 
 if __name__ == '__main__':
     unittest.main()

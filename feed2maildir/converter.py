@@ -53,10 +53,11 @@ Content-Type: text/plain
 """
 
     def __init__(self, db='~/.f2mdb', maildir='~/mail/feeds', strip=False,
-                 silent=False):
+                 links=False, silent=False):
         self.silent = silent
         self.maildir = os.path.expanduser(maildir)
         self.db = os.path.expanduser(db)
+        self.links = links
         self.strip = strip
 
         try: # to read the database
@@ -155,7 +156,7 @@ Content-Type: text/plain
         except: # the property is not set, use now()
             updated = datetime.datetime.now()
         return self.TEMPLATE.format(updated, post.title, title, post.link,
-                                    post.description)
+                                    '' if self.links else post.description)
 
     def write(self, message):
         """Take a message and write it to a mail"""

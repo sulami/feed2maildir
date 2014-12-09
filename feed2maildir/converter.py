@@ -21,6 +21,7 @@ class HTMLStripper(HTMLParser):
         self.reset()
         self.strict = False
         self.fed = []
+        self.convert_charrefs = True
 
     def handle_data(self, d):
         self.fed.append(d)

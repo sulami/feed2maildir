@@ -58,6 +58,8 @@ class ConverterTestCase(unittest.TestCase):
         self.assertIsNone(converter.dbdata)
 
     def test_read_valid_db(self):
+        with open('/tmp/db', 'w') as f:
+            f.write('{"somefeed": "1970-01-01 00:00:01 UTC"}')
         converter = Converter(db='/tmp/db')
         self.assertIsNotNone(converter.dbdata)
 

@@ -147,9 +147,19 @@ class ConverterTestCase(unittest.TestCase):
         teststring = """<!DOCTYPE html><html><head><title>test</title></head>
 <body><h1>Header</h1>
 <span class="foobar">content</span>
-<img src="https://www.google.de//images/srpr/logo11w.png" /></body> </html>"""
+<img src="https://google.com/images/srpr/logo11w.png" />
+<a href="https://ddg.gg/">DuckDuckGo</a>
+<a href="https://google.com/">Google</a>
+</body></html>"""
         desire = """test\nHeader\ncontent
-[Image]: https://www.google.de//images/srpr/logo11w.png\n """
+[Image]: https://google.com/images/srpr/logo11w.png
+
+DuckDuckGo [0]
+Google [1]
+
+  [0]: https://ddg.gg/
+  [1]: https://google.com/
+"""
         stripper = HTMLStripper()
         stripper.feed(teststring)
         out = stripper.get_data()

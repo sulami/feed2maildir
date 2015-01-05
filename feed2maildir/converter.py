@@ -22,6 +22,8 @@ class HTMLStripper(HTMLParser):
         self.strict = False
         self.fed = []
         self.convert_charrefs = True
+        self.numlinks = 0
+        self.links = {}
 
     def handle_data(self, d):
         self.fed.append(d)
@@ -33,9 +35,23 @@ class HTMLStripper(HTMLParser):
                     link = attr[1]
                     break;
             self.fed.append('[Image]: {}\n'.format(link))
+        elif tag == 'a':
+            for attr in attrs:
+                if attr[0] == 'href':
+                    self.links[self.numlinks] = attr[1]
+
+    def handle_endtag(self, tag):
+        if tag == 'a':
+            self.fed.append(' [{}]'.format(self.numlinks))
+            self.numlinks += 1
 
     def get_data(self):
-        return ''.join(self.fed)
+        out = ''.join(self.fed)
+        if self.numlinks:
+            out += '\n'
+            for l in range(self.numlinks):
+                out += '  [{}]: {}\n'.format(l, self.links[l])
+        return out
 
 class Converter:
     """Compares the already parsed feeds and converts new ones to maildir"""

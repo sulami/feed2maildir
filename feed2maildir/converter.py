@@ -39,6 +39,8 @@ class HTMLStripper(HTMLParser):
             for attr in attrs:
                 if attr[0] == 'href':
                     self.links[self.numlinks] = attr[1]
+        elif tag == 'li':
+            self.fed.append('- ')
 
     def handle_endtag(self, tag):
         if tag == 'a':

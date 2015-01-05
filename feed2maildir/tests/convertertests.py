@@ -148,14 +148,14 @@ class ConverterTestCase(unittest.TestCase):
 <body><h1>Header</h1>
 <span class="foobar">content</span>
 <img src="https://google.com/images/srpr/logo11w.png" />
-<a href="https://ddg.gg/">DuckDuckGo</a>
-<a href="https://google.com/">Google</a>
+<li><a href="https://ddg.gg/">DuckDuckGo</a></li>
+<li><a href="https://google.com/">Google</a></li>
 </body></html>"""
         desire = """test\nHeader\ncontent
 [Image]: https://google.com/images/srpr/logo11w.png
 
-DuckDuckGo [0]
-Google [1]
+- DuckDuckGo [0]
+- Google [1]
 
   [0]: https://ddg.gg/
   [1]: https://google.com/

@@ -77,6 +77,8 @@ Content-Type: text/plain
         self.db = os.path.expanduser(db)
         self.links = links
         self.strip = strip
+        if self.strip:
+            self.stripper = HTMLStripper()
 
         try: # to read the database
             with open(self.db, 'r') as f:
@@ -173,8 +175,15 @@ Content-Type: text/plain
             updated = post.updated
         except: # the property is not set, use now()
             updated = datetime.datetime.now()
+        desc = ''
+        if not self.links:
+            if self.strip:
+                self.stripper.feed(post.description)
+                desc = stripper.get_data()
+            else:
+                desc = post.description
         return self.TEMPLATE.format(updated, post.title, title, post.link,
-                                    '' if self.links else post.description)
+                                    desc)
 
     def write(self, message):
         """Take a message and write it to a mail"""

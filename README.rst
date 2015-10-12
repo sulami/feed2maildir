@@ -3,6 +3,12 @@ Feed2Maildir
 
 Read RSS/Atom feeds in your favourite, maildir-compatible email client.
 
+.. image:: https://img.shields.io/pypi/v/feed2maildir.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/feed2maildir
+
+.. image:: https://img.shields.io/pypi/dm/feed2maildir.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/feed2maildir
+
 Requirements
 ------------
 

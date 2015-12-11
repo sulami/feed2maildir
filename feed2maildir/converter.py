@@ -127,7 +127,7 @@ Content-Type: text/plain
             # print(feedname, feedup.tzinfo)
             if not oldtime or oldtime < feedup:
                 for post in feed.entries:
-                    feedtime = self.mktime(post.updated)
+                    feedtime = self.post_update_time(post)
                     try: # to localize the timezone
                         feedtime = feedtime.astimezone(dateutil.tz.tzutc())
                     except: # it is naive
@@ -151,11 +151,21 @@ Content-Type: text/plain
 
         return new
 
+    def post_update_time(self, post):
+        """Try to get the post time"""
+        try:
+            return self.mktime(post.updated)
+        except AttributeError:
+            try:
+                return self.mktime(post.published)
+            except AttributeError: # last resort
+                return datetime.datetime.now()
+
     def find_update_time(self, feed):
         """Find the last updated post in a feed"""
         times = []
         for post in feed.entries:
-            times.append(self.mktime(post.updated))
+            times.append(self.post_update_time(post))
         return sorted(times)[-1]
 
     def check_maildir(self, maildir):

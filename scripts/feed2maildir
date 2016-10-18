@@ -12,11 +12,11 @@ from feed2maildir.reader import Reader
 def main():
     parser = argparse.ArgumentParser(description='Convert Feeds to a maildir',
                                      epilog='Feed2Maildir '+ VERSION)
-    parser.add_argument('-c', nargs=1, metavar='<file>',
+    parser.add_argument('-c', metavar='<file>',
                         help='override the config file location (~/.f2mrc)')
-    parser.add_argument('-d', nargs=1, metavar='<file>',
+    parser.add_argument('-d', metavar='<file>',
                         help='override the database file location (~/.f2mdb)')
-    parser.add_argument('-m', nargs=1, metavar='<dir>',
+    parser.add_argument('-m', metavar='<dir>',
                         help='override the maildir location (None)')
     parser.add_argument('-s', action='store_true',
                         help='strip HTML from the feed content')

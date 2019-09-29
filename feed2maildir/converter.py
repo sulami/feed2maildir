@@ -189,7 +189,7 @@ Content-Type: text/plain
         if not self.links:
             if self.strip:
                 self.stripper.feed(post.description)
-                desc = stripper.get_data()
+                desc = self.stripper.get_data()
             else:
                 desc = post.description
         return self.TEMPLATE.format(updated, post.title, title, post.link,

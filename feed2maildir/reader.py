@@ -11,6 +11,7 @@ class Reader:
             if f.bozo:
                 self.output('WARNING: could not parse feed {}'.format(feed))
             else:
+                f.feed_alias_name = feed # user provided text
                 self.feeds.append(f)
 
     def output(self, arg):

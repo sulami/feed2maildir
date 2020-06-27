@@ -3,6 +3,7 @@ import json
 import os
 import random
 import sys
+import time
 
 if sys.version[0] == '2':
     from HTMLParser import HTMLParser
@@ -10,6 +11,7 @@ else:
     from html.parser import HTMLParser
 
 import dateutil.parser
+import email.utils
 
 # Python 2.x compabitlity
 if sys.version[0] == '2':
@@ -185,6 +187,11 @@ Content-Type: text/plain
             updated = post.updated
         except: # the property is not set, use now()
             updated = datetime.datetime.now()
+
+        # convert the time to RFC 2822 format, expected by MUA programs
+        d = dateutil.parser.parse(updated)
+        updated = email.utils.formatdate(time.mktime(d.timetuple()), usegmt=True)
+
         desc = ''
         if not self.links:
             if self.strip:

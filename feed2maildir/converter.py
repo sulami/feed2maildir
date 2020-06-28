@@ -111,6 +111,7 @@ Content-Type: text/plain
         newtimes = {}
         for feed in feeds:
             feedname = feed.feed.title
+            feedaliasname = feed.feed_alias_name
             try: # to get the update time from the feed itself
                 feedup = self.mktime(feed.feed.updated)
             except: # there is no info, then find it in the posts
@@ -136,9 +137,9 @@ Content-Type: text/plain
                         feedtime = feedtime.replace(tzinfo=dateutil.tz.tzutc())
                     if not oldtime or oldtime < feedtime:
                         try: # to append the post the the feed-list
-                            new[feedname].append(post)
+                            new[feedaliasname].append(post)
                         except: # it is the first one, make a new list
-                            new[feedname] = [post, ]
+                            new[feedaliasname] = [post, ]
             if writedb:
                 newtimes[feedname] = feedup.strftime('%Y-%m-%d %H:%M:%S %Z')
 

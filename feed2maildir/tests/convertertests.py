@@ -45,6 +45,7 @@ class ConverterTestCase(unittest.TestCase):
                 ),
             ],
         )
+        self.testfeed.feed_alias_name = self.testfeed.feed.title
         self.test = [self.testfeed, ]
 
     def test_read_nonexistent_db(self):
@@ -69,7 +70,7 @@ class ConverterTestCase(unittest.TestCase):
         converter = Converter(db='/tmp/db')
         converter.load(self.test)
         self.assertEqual(len(converter.feeds), 1)
-        self.assertEqual(len(converter.feeds[0]), 2)
+        self.assertEqual(len(converter.feeds[0]), 3)
 
     def test_fail_to_make_maildir(self):
         converter = Converter(maildir='/maildir', db='/tmp/db', silent=True)

@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  run-tests:
+    parameters:
+      python-version:
+        type: string
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+              pip install -r requirements.txt
+              pip install pytest
+      - run:
+          name: Run tests
+          command: |
+              pytest --junitxml=test-results/junit.xml
+      - store_test_results:
+          path: test-results
+
+workflows:
+  tests:
+    jobs:
+      - run-tests:
+          matrix:
+            parameters:
+              python-version: ["2.7", "3.6", "3.8"]

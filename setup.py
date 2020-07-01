@@ -6,6 +6,10 @@ def readme():
     with open('README.rst') as f:
         return f.read()
 
+def deps():
+    with open('requirements.txt') as f:
+        return f.readlines()
+
 setup(name='feed2maildir',
       version=feed2maildir.VERSION,
       description='Convert feeds to maildirs',
@@ -17,10 +21,7 @@ setup(name='feed2maildir',
       packages=['feed2maildir'],
       test_suite = 'feed2maildir.tests',
       zip_safe=False,
-      install_requires=[
-          'feedparser>=5.1.3',
-          'python-dateutil>=2.2',
-      ],
+      install_requires=deps(),
       scripts=['scripts/feed2maildir',],
       classifiers=[
           'Development Status :: 4 - Beta',

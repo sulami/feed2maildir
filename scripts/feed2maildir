@@ -43,10 +43,11 @@ def main():
     else:
         maildir = config['maildir']
 
+    strip = args['s']
     if args['strip_program']:
-        args['s'] = True
+        strip = True
 
-    converter = Converter(db=db, maildir=maildir, strip=args['s'],
+    converter = Converter(db=db, maildir=maildir, strip=strip,
                           strip_program=args['strip_program'],
                           links=args['l'])
     converter.load(reader.feeds)

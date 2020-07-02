@@ -13,7 +13,7 @@ else:
 import dateutil.parser
 import email.utils
 
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, CalledProcessError
 
 # Python 2.x compabitlity
 if sys.version[0] == '2':
@@ -68,9 +68,15 @@ class ExternalHTMLStripper:
         self.raw_data.append(data)
 
     def close(self):
-        p = Popen(self.strip_program, stdin=PIPE, stdout=PIPE, shell=True)
         input_ = u''.join(self.raw_data).encode('utf-8')
-        output, _ = p.communicate(input_)
+        p = Popen(self.strip_program, stdin=PIPE, stdout=PIPE, shell=True)
+        output, err = p.communicate(input_)
+        if p.returncode != 0:
+           # Note: feed2maildir supports Python 2.7+ and 3.2+ so we have to
+           # print the stderr here. In Python 3.5+ we could add it as part
+           # of the CalledProcessError exception.
+           print(err)
+           raise CalledProcessError(p.returncode, self.strip_program)
 
         self.stripped = output.decode('utf-8')
 

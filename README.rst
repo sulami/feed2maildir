@@ -51,8 +51,27 @@ There are a bunch of command-line arguments to overwrite the config file:
         -d <file>   override the database file location (~/.f2mdb)
         -m <dir>    override the maildir location (None)
         -s          strip HTML from the feeds
+        -S <prog>   strip HTML from the feeds using an external program
         -l          just write the links without the update
 
 To check for updates regularly, just toss it into cron to run once every hour
 or so.
+
+Strip HTML
+----------
+
+``feed2maildir`` can strip the HTML tags from the feed using a built-in HTML
+stripper (option ``-s``) or using an external program (option ``-S <prog>``)
+
+In this last case, the program must read the HTML from it standard input and
+return it stripped via the standard output.
+
+The ``<prog>`` can be the name of a program or it can be a full shell command.
+In that case don't forget to quote the full command.
+
+Here is an example of using ``pandoc`` to convert HTML to Markdown
+
+::
+
+    feed2maildir -S 'pandoc --from html --to markdown_strict'
 

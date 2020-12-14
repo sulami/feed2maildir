@@ -112,10 +112,7 @@ Content-Type: text/plain
         for feed in feeds:
             feedname = feed.feed.title
             feedaliasname = feed.feed_alias_name
-            try: # to get the update time from the feed itself
-                feedup = self.mktime(feed.feed.updated)
-            except: # there is no info, then find it in the posts
-                feedup = self.find_update_time(feed)
+            feedup = self.feed_update_time(feed)
             try: # to localize the timezone
                 feedup = feedup.astimezone(dateutil.tz.tzutc())
             except: # it is naive, force UTC
@@ -170,6 +167,18 @@ Content-Type: text/plain
         for post in feed.entries:
             times.append(self.post_update_time(post))
         return sorted(times)[-1]
+
+    def feed_update_time(self, feed):
+        # find the newest post and get its time
+        newest_post_time = self.find_update_time(feed)
+        try: # to get the update time from the feed itself
+            feed_time = self.mktime(feed.feed.updated)
+        except:
+            return newest_post_time
+        # Some feeds like Youtube do not update the feed's update time.
+        # The value 'feed_time' is a valid date, but outdated so
+        # we have to compare it with the posts' times and get the latest.
+        return max(newest_post_time, feed_time)
 
     def check_maildir(self, maildir):
         """Check access to the maildir and try to create it if not present"""

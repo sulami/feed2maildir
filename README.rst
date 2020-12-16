@@ -12,7 +12,7 @@ Read RSS/Atom feeds in your favourite, maildir-compatible email client.
 Requirements
 ------------
 
-- Python 2.7+ / 3.2+
+- Python 3.2+
 - ``feedparser``
 - ``python-dateutil``
 

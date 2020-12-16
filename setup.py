@@ -12,6 +12,7 @@ def deps():
 
 setup(name='feed2maildir',
       version=feed2maildir.VERSION,
+      python_requires='>=3.2,<4',
       description='Convert feeds to maildirs',
       long_description=readme(),
       url='https://github.com/sulami/feed2maildir',

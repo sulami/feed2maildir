@@ -22,6 +22,9 @@ def main():
                         help='strip HTML from the feed content')
     parser.add_argument('-l', action='store_true',
                         help='just write the links without the content')
+    parser.add_argument('-S', metavar='<program>',
+                        dest='strip_program', default=None,
+                        help='strip HTML from the feed content using an external program')
     args = vars(parser.parse_args())
 
     if args['c']:
@@ -40,7 +43,12 @@ def main():
     else:
         maildir = config['maildir']
 
-    converter = Converter(db=db, maildir=maildir, strip=args['s'],
+    strip = args['s']
+    if args['strip_program']:
+        strip = True
+
+    converter = Converter(db=db, maildir=maildir, strip=strip,
+                          strip_program=args['strip_program'],
                           links=args['l'])
     converter.load(reader.feeds)
     converter.run()

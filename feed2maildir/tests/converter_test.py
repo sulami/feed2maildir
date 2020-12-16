@@ -6,7 +6,7 @@ import os
 import shutil
 import unittest
 
-from feed2maildir.converter import Converter, HTMLStripper
+from feed2maildir.converter import Converter, HTMLStripper, ExternalHTMLStripper
 
 class AttrDict(dict):
     """This is a dict that can be accessed via attributes, just like the
@@ -164,6 +164,26 @@ class ConverterTestCase(unittest.TestCase):
         stripper = HTMLStripper()
         stripper.feed(teststring)
         out = stripper.get_data()
+        self.assertEqual(out, desire)
+
+    def test_external_html_stripper(self):
+        teststring = """<!DOCTYPE html><html><head><title>test</title></head>
+<body><h1>Header</h1>
+<span class="foobar">content</span>
+<img src="https://google.com/images/srpr/logo11w.png" />
+<li><a href="https://ddg.gg/">DuckDuckGo</a></li>
+<li><a href="https://google.com/">Google</a></li>
+</body></html>"""
+        desire = teststring
+
+        # call the 'cat' program. Not a really stripper but
+        # we test that we can call an external program and that's
+        # the important thing for this test.
+        stripper = ExternalHTMLStripper('cat')
+        stripper.feed(teststring)
+        stripper.close()
+        out = stripper.get_data()
+        stripper.reset()
         self.assertEqual(out, desire)
 
     def test_just_links(self):
